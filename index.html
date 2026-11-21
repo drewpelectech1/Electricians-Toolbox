@@ -4,312 +4,656 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101827">
-<title>Electrician's Toolbox - Conduit Calculator</title>
+<title>ELECTRICIAN'S TOOLBOX</title>
 
 <style>
 * {
-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-margin: 0;
-padding: 20px;
-background: #101827;
-color: white;
-font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: #101827;
+  color: white;
+  font-family: Arial, sans-serif;
 }
 
 .container {
-max-width: 520px;
-margin: 20px auto;
-background: #1e293b;
-padding: 25px;
-border-radius: 16px;
+  max-width: 520px;
+  margin: 20px auto;
+  background: #1e293b;
+  padding: 25px;
+  border-radius: 16px;
 }
 
 h1 {
-text-align: center;
-font-size: 26px;
+  text-align: center;
+  font-size: 26px;
 }
 
 .subtitle {
-text-align: center;
-color: #94a3b8;
-margin-bottom: 25px;
+  text-align: center;
+  color: #94a3b8;
+  margin-bottom: 25px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.tile {
+  background: #334b6b;
+  border: 1px solid #475569;
+  border-radius: 12px;
+  padding: 18px 10px;
+  color: white;
+  min-height: 125px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+}
+
+.tile:hover {
+  background: #405f85;
+}
+
+.tile-icon {
+  font-size: 28px;
+}
+
+.tile-title {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.tile-description {
+  color: #cbd5e1;
+  font-size: 11px;
+  font-weight: normal;
+}
+
+.tool-button {
+  background: #334b6b;
+  text-align: left;
+  padding: 18px;
+  margin-top: 12px;
+}
+
+.back-button {
+  background: #475569;
+  margin-bottom: 15px;
 }
 
 label {
-display: block;
-margin-top: 20px;
-margin-bottom: 8px;
-font-weight: bold;
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 8px;
+  font-weight: bold;
 }
 
 input, select {
-width: 100%;
-padding: 15px;
-border: 1px solid #475569;
-border-radius: 9px;
-background: #0f172a;
-color: white;
-font-size: 18px;
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #475569;
+  border-radius: 9px;
+  background: #0f172a;
+  color: white;
+  font-size: 18px;
 }
 
 button {
-width: 100%;
-padding: 17px;
-margin-top: 20px;
-border: none;
-border-radius: 9px;
-background: #16a34a;
-color: white;
-font-size: 18px;
-font-weight: bold;
-cursor: pointer;
+  width: 100%;
+  padding: 17px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 9px;
+  background: #16a34a;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 button:active {
-background: #15803d;
+  opacity: 0.8;
+}
+
+.reset-button {
+  background: #475569;
 }
 
 .result {
-display: none;
-margin-top: 25px;
-padding: 20px;
-background: #0f172a;
-border: 1px solid #16a34a;
-border-radius: 10px;
+  display: none;
+  margin-top: 25px;
+  padding: 20px;
+  background: #0f172a;
+  border: 1px solid #16a34a;
+  border-radius: 10px;
 }
 
 .result h2 {
-color: #4ade80;
-text-align: center;
+  color: #4ade80;
+  text-align: center;
 }
 
 .result-number {
-font-size: 32px;
-font-weight: bold;
-text-align: center;
-color: #4ade80;
-margin: 15px 0;
+  font-size: 32px;
+  font-weight: bold;
+  text-align: center;
+  color: #4ade80;
+  margin: 15px 0;
 }
 
 .detail {
-padding: 10px 0;
-border-bottom: 1px solid #334155;
+  padding: 10px 0;
+  border-bottom: 1px solid #334155;
 }
 
 .error {
-color: #f87171;
-margin-top: 12px;
+  color: #f87171;
+  margin-top: 12px;
 }
 
 .footer {
-text-align: center;
-color: #64748b;
-font-size: 12px;
-margin-top: 25px;
+  text-align: center;
+  color: #64748b;
+  font-size: 12px;
+  margin-top: 25px;
+}
+
+@media (max-width: 380px) {
+  .container {
+    padding: 18px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  .tile-title {
+    font-size: 12px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<!-- MAIN HOME SCREEN -->
 
-<h1> ELECTRICIAN'S TOOLBOX</h1>
+<div class="container" id="homePage">
 
-<p class="subtitle">Conduit Offset Calculator</p>
+  <h1>ELECTRICIAN'S TOOLBOX</h1>
 
-<label for="depth"><strong>OFFSET DEPTH (INCHES)</strong></label>
-<input
-type="text"
-id="depth"
-placeholder="Example: 6 or 6 1/2"
+  <p class="subtitle">
+    Your Everyday Electrical Field Companion
+  </p>
 
-<label for="angle" style="display:block; margin-top:16px; margin-bottom:8px;"><strong>BEND ANGLE</strong></label><select id="angle"><option value="5.8">10 Degrees</option>
-<option value="3.9">15 Degrees</option>
-<option value="2.6">22.5 Degrees</option>
-<option value="2.0" selected>30 Degrees</option>
-<option value="1.4">45 Degrees</option>
-<option value="1.2">60 Degrees</option>
-</select>
+  <div class="home-grid">
 
-<button onclick="calculateOffset()">
-CALCULATE OFFSET
-</button>
+    <button class="tile" onclick="openCategory('conduit')">
+      <span class="tile-icon">📐</span>
+      <span class="tile-title">Conduit Calculators</span>
+      <span class="tile-description">Offsets, saddles and bends</span>
+    </button>
 
-<button onclick="resetCalculator()"
-style="background:#475569">
-RESET
-</button>
+    <button class="tile" onclick="openCategory('electrical')">
+      <span class="tile-icon">🧮</span>
+      <span class="tile-title">Electrical Calculators</span>
+      <span class="tile-description">Ohm's law and voltage drop</span>
+    </button>
 
-<div class="result" id="result">
+    <button class="tile" onclick="openCategory('wire')">
+      <span class="tile-icon">🔌</span>
+      <span class="tile-title">Wire & Conduit</span>
+      <span class="tile-description">Sizing and conduit fill</span>
+    </button>
 
-<h2>Calculation Results</h2>
+    <button class="tile" onclick="openCategory('motors')">
+      <span class="tile-icon">⚙️</span>
+      <span class="tile-title">Motors & Controls</span>
+      <span class="tile-description">Motors and transformers</span>
+    </button>
 
-<div class="detail">
-Offset Depth:
-<strong id="showDepth"></strong>
-</div>
+    <button class="tile" onclick="openCategory('reference')">
+      <span class="tile-icon">📖</span>
+      <span class="tile-title">Electrical Reference</span>
+      <span class="tile-description">Formulas and references</span>
+    </button>
 
-<div class="detail">
-Bend Angle:
-<strong id="showAngle"></strong>
-</div>
+    <button class="tile" onclick="openCategory('field')">
+      <span class="tile-icon">📏</span>
+      <span class="tile-title">Field Tools</span>
+      <span class="tile-description">Measurements and conversions</span>
+    </button>
 
-<div class="detail">
-Multiplier:
-<strong id="showMultiplier"></strong>
-</div>
+  </div>
 
-<div class="result-number" id="distance">
-</div>
-
-<p style="text-align:center">
-Distance Between Bend Marks
-</p>
-
-</div>
-
-<div id="error" class="error"></div>
-
-<p class="footer">
-Built by Electricians. For Electricians.
-</p>
+  <p class="footer">
+    Built by Electricians. For Electricians.
+  </p>
 
 </div>
+
+
+<!-- CATEGORY SCREEN -->
+
+<div class="container hidden" id="categoryPage">
+
+  <button class="back-button" onclick="showHome()">
+    ← BACK TO HOME
+  </button>
+
+  <h1 id="categoryTitle"></h1>
+
+  <p class="subtitle" id="categoryDescription"></p>
+
+  <div id="categoryTools"></div>
+
+</div>
+
+
+<!-- CONDUIT OFFSET CALCULATOR -->
+
+<div class="container hidden" id="calculatorPage">
+
+  <button class="back-button" onclick="showCategory()">
+    ← BACK TO CONDUIT CALCULATORS
+  </button>
+
+  <h1>ELECTRICIAN'S TOOLBOX</h1>
+
+  <p class="subtitle">Conduit Offset Calculator</p>
+
+  <label for="depth">
+    OFFSET DEPTH (INCHES)
+  </label>
+
+  <input
+    type="text"
+    id="depth"
+    placeholder="Example: 6 or 6 1/2"
+  >
+
+  <label for="angle">
+    BEND ANGLE
+  </label>
+
+  <select id="angle">
+    <option value="5.8">10 Degrees</option>
+    <option value="3.9">15 Degrees</option>
+    <option value="2.6">22.5 Degrees</option>
+    <option value="2.0" selected>30 Degrees</option>
+    <option value="1.4">45 Degrees</option>
+    <option value="1.2">60 Degrees</option>
+  </select>
+
+  <button onclick="calculateOffset()">
+    CALCULATE OFFSET
+  </button>
+
+  <button class="reset-button" onclick="resetCalculator()">
+    RESET
+  </button>
+
+  <div class="result" id="result">
+
+    <h2>Calculation Results</h2>
+
+    <div class="detail">
+      Offset Depth:
+      <strong id="showDepth"></strong>
+    </div>
+
+    <div class="detail">
+      Bend Angle:
+      <strong id="showAngle"></strong>
+    </div>
+
+    <div class="detail">
+      Multiplier:
+      <strong id="showMultiplier"></strong>
+    </div>
+
+    <div class="result-number" id="distance"></div>
+
+    <p style="text-align:center">
+      Distance Between Bend Marks
+    </p>
+
+  </div>
+
+  <div id="error" class="error"></div>
+
+  <p class="footer">
+    Built by Electricians. For Electricians.
+  </p>
+
+</div>
+
 
 <script>
 
+// CATEGORY INFORMATION
+
+const categories = {
+
+  conduit: {
+    title: "CONDUIT CALCULATORS",
+    description: "Conduit bending and calculations",
+    tools: [
+      {
+        name: "Conduit Offset Calculator",
+        description: "Calculate offset bend spacing",
+        action: "offset"
+      },
+      {
+        name: "3-Point Saddle Calculator",
+        description: "Calculate three-point saddle bends",
+        action: "soon"
+      },
+      {
+        name: "4-Point Saddle Calculator",
+        description: "Calculate four-point saddle bends",
+        action: "soon"
+      },
+      {
+        name: "Parallel Offset Calculator",
+        description: "Calculate parallel conduit offsets",
+        action: "soon"
+      }
+    ]
+  },
+
+  electrical: {
+    title: "ELECTRICAL CALCULATORS",
+    description: "Electrical formulas and calculations",
+    tools: [
+      {name: "Ohm's Law Calculator", action: "soon"},
+      {name: "Voltage Drop Calculator", action: "soon"},
+      {name: "Power Calculator", action: "soon"}
+    ]
+  },
+
+  wire: {
+    title: "WIRE & CONDUIT",
+    description: "Wire sizing and conduit calculations",
+    tools: [
+      {name: "Wire Sizing Calculator", action: "soon"},
+      {name: "Conduit Fill Calculator", action: "soon"}
+    ]
+  },
+
+  motors: {
+    title: "MOTORS & CONTROLS",
+    description: "Industrial electrical tools",
+    tools: [
+      {name: "Motor Calculator", action: "soon"},
+      {name: "Transformer Calculator", action: "soon"}
+    ]
+  },
+
+  reference: {
+    title: "ELECTRICAL REFERENCE",
+    description: "Useful electrical information",
+    tools: [
+      {name: "Electrical Formulas", action: "soon"},
+      {name: "Reference Tables", action: "soon"}
+    ]
+  },
+
+  field: {
+    title: "FIELD TOOLS",
+    description: "Everyday field calculations",
+    tools: [
+      {name: "Fraction Converter", action: "soon"},
+      {name: "Measurement Converter", action: "soon"}
+    ]
+  }
+
+};
+
+
+// NAVIGATION
+
+let currentCategory = "conduit";
+
+function hideAllPages() {
+  document.getElementById("homePage").classList.add("hidden");
+  document.getElementById("categoryPage").classList.add("hidden");
+  document.getElementById("calculatorPage").classList.add("hidden");
+}
+
+function showHome() {
+  hideAllPages();
+  document.getElementById("homePage").classList.remove("hidden");
+}
+
+function openCategory(category) {
+
+  currentCategory = category;
+
+  const data = categories[category];
+
+  document.getElementById("categoryTitle").textContent =
+    data.title;
+
+  document.getElementById("categoryDescription").textContent =
+    data.description;
+
+  const toolsContainer =
+    document.getElementById("categoryTools");
+
+  toolsContainer.innerHTML = "";
+
+  data.tools.forEach(tool => {
+
+    const button = document.createElement("button");
+
+    button.className = "tool-button";
+    button.textContent = tool.name;
+
+    button.onclick = function() {
+
+      if (tool.action === "offset") {
+        openCalculator();
+      } else {
+        alert("This tool is coming soon!");
+      }
+
+    };
+
+    toolsContainer.appendChild(button);
+
+    if (tool.description) {
+
+      const description = document.createElement("p");
+
+      description.style.color = "#94a3b8";
+      description.style.fontSize = "12px";
+      description.style.margin = "4px 0 10px";
+      description.textContent = tool.description;
+
+      toolsContainer.appendChild(description);
+    }
+
+  });
+
+  hideAllPages();
+
+  document.getElementById("categoryPage").classList.remove("hidden");
+}
+
+function showCategory() {
+  hideAllPages();
+  document.getElementById("categoryPage").classList.remove("hidden");
+}
+
+function openCalculator() {
+  hideAllPages();
+  document.getElementById("calculatorPage").classList.remove("hidden");
+}
+
+
+// ORIGINAL OFFSET CALCULATOR
+
 const multipliers = {
-10: 5.8,
-15: 3.9,
-22.5: 2.6,
-30: 2.0,
-45: 1.4,
-60: 1.2
+  10: 5.8,
+  15: 3.9,
+  22.5: 2.6,
+  30: 2.0,
+  45: 1.4,
+  60: 1.2
 };
 
 function parseMeasurement(value) {
-value = value.trim();
 
-if (!value) return NaN;
+  value = value.trim();
 
-const parts = value.split(/\s+/);
+  if (!value) return NaN;
 
-if (parts.length === 1) {
-  return Number(parts[0]);
+  const parts = value.split(/\s+/);
+
+  if (parts.length === 1) {
+    return Number(parts[0]);
+  }
+
+  if (parts.length === 2 && parts[1].includes("/")) {
+
+    const fraction = parts[1].split("/");
+
+    const numerator = Number(fraction[0]);
+    const denominator = Number(fraction[1]);
+
+    if (!denominator) return NaN;
+
+    return Number(parts[0]) + numerator / denominator;
+  }
+
+  return NaN;
 }
 
-if (parts.length === 2 && parts[1].includes("/")) {
-  const fraction = parts[1].split("/");
-  const numerator = Number(fraction[0]);
-  const denominator = Number(fraction[1]);
-
-  if (!denominator) return NaN;
-
-  return Number(parts[0]) + numerator / denominator;
-}
-
-return NaN;
-}
 
 function formatMeasurement(value) {
-const whole = Math.floor(value);
-const decimal = value - whole;
 
-const fractions = [
-  [0, 1],
-  [1/16, "1/16"],
-  [1/8, "1/8"],
-  [3/16, "3/16"],
-  [1/4, "1/4"],
-  [5/16, "5/16"],
-  [3/8, "3/8"],
-  [7/16, "7/16"],
-  [1/2, "1/2"],
-  [9/16, "9/16"],
-  [5/8, "5/8"],
-  [11/16, "11/16"],
-  [3/4, "3/4"],
-  [13/16, "13/16"],
-  [7/8, "7/8"],
-  [15/16, "15/16"],
-  [1, "1"]
-];
+  const whole = Math.floor(value);
+  const decimal = value - whole;
 
-let closest = fractions[0];
+  const fractions = [
+    [0, 1],
+    [1/16, "1/16"],
+    [1/8, "1/8"],
+    [3/16, "3/16"],
+    [1/4, "1/4"],
+    [5/16, "5/16"],
+    [3/8, "3/8"],
+    [7/16, "7/16"],
+    [1/2, "1/2"],
+    [9/16, "9/16"],
+    [5/8, "5/8"],
+    [11/16, "11/16"],
+    [3/4, "3/4"],
+    [13/16, "13/16"],
+    [7/8, "7/8"],
+    [15/16, "15/16"],
+    [1, "1"]
+  ];
 
-for (const fraction of fractions) {
-  if (Math.abs(decimal - fraction[0]) <
-      Math.abs(decimal - closest[0])) {
-    closest = fraction;
+  let closest = fractions[0];
+
+  for (const fraction of fractions) {
+
+    if (
+      Math.abs(decimal - fraction[0]) <
+      Math.abs(decimal - closest[0])
+    ) {
+      closest = fraction;
+    }
+
   }
+
+  if (closest[0] === 1) {
+    return (whole + 1) + '"';
+  }
+
+  if (closest[0] === 0) {
+    return whole + '"';
+  }
+
+  if (whole === 0) {
+    return closest[1] + '"';
+  }
+
+  return whole + " " + closest[1] + '"';
 }
 
-if (closest[0] === 1) {
-  return (whole + 1) + '"';
-}
-
-if (closest[0] === 0) {
-  return whole + '"';
-}
-
-if (whole === 0) {
-  return closest[1] + '"';
-}
-
-return whole + " " + closest[1] + '"';
-}
 
 function calculateOffset() {
-const depth = parseMeasurement(
-  document.getElementById("depth").value
-);
 
-const angle = Number(
-  document.getElementById("angle").options[
-    document.getElementById("angle").selectedIndex
-  ].text.replace(" Degrees", "")
-);
+  const depth = parseMeasurement(
+    document.getElementById("depth").value
+  );
 
-const multiplier = multipliers[angle];
+  const angle = Number(
+    document.getElementById("angle").options[
+      document.getElementById("angle").selectedIndex
+    ].text.replace(" Degrees", "")
+  );
 
-const error = document.getElementById("error");
-const result = document.getElementById("result");
+  const multiplier = multipliers[angle];
 
-error.textContent = "";
-result.style.display = "none";
+  const error = document.getElementById("error");
+  const result = document.getElementById("result");
 
-if (!Number.isFinite(depth) || depth <= 0) {
-  error.textContent =
-    "Please enter a valid offset depth, such as 6 or 6 1/2.";
-  return;
+  error.textContent = "";
+  result.style.display = "none";
+
+  if (!Number.isFinite(depth) || depth <= 0) {
+
+    error.textContent =
+      "Please enter a valid offset depth, such as 6 or 6 1/2.";
+
+    return;
+  }
+
+  const distance = depth * multiplier;
+
+  document.getElementById("showDepth").textContent =
+    formatMeasurement(depth);
+
+  document.getElementById("showAngle").textContent =
+    angle + " Degrees";
+
+  document.getElementById("showMultiplier").textContent =
+    multiplier;
+
+  document.getElementById("distance").textContent =
+    formatMeasurement(distance);
+
+  result.style.display = "block";
 }
 
-const distance = depth * multiplier;
-
-document.getElementById("showDepth").textContent =
-  formatMeasurement(depth);
-
-document.getElementById("showAngle").textContent =
-  angle + " Degrees";
-
-document.getElementById("showMultiplier").textContent =
-  multiplier;
-
-document.getElementById("distance").textContent =
-  formatMeasurement(distance);
-
-result.style.display = "block";
-}
 
 function resetCalculator() {
-document.getElementById("depth").value = "";
-document.getElementById("angle").value = "2.0";
-document.getElementById("result").style.display = "none";
-document.getElementById("error").textContent = "";
+
+  document.getElementById("depth").value = "";
+
+  document.getElementById("angle").value = "2.0";
+
+  document.getElementById("result").style.display = "none";
+
+  document.getElementById("error").textContent = "";
 }
 
 </script>
