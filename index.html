@@ -399,6 +399,15 @@ button:active {
         Center to Outside Mark:
         <strong id="showSaddleSpacing"></strong>
       </div>
+      <div class="detail">
+  Shrink Allowance:
+  <strong id="saddleShrink"></strong>
+</div>
+
+<div class="detail" style="line-height:1.5;">
+  <strong>Center Mark Adjustment:</strong>
+Measure from the end of the conduit toward the obstruction. Add the shrink allowance to the measured distance to the actual center of the obstruction. Place your center mark at this new measurement.
+</div>
 
       <div class="result-number" id="saddleSpan"></div>
 
@@ -605,17 +614,21 @@ function calculateSaddle() {
     return;
   }
 
-  const spacing = height * 2.6;
-  const totalSpan = spacing * 2;
+  const spacing = height * 2.5;
+const totalSpan = spacing * 2;
+const shrink = height * (3 / 16);
 
-  document.getElementById("showSaddleHeight").textContent =
-    formatMeasurement(height);
+document.getElementById("showSaddleHeight").textContent =
+  formatMeasurement(height);
 
-  document.getElementById("showSaddleSpacing").textContent =
-    formatMeasurement(spacing);
+document.getElementById("showSaddleSpacing").textContent =
+  formatMeasurement(spacing);
 
-  document.getElementById("saddleSpan").textContent =
-    formatMeasurement(totalSpan);
+document.getElementById("saddleSpan").textContent =
+  formatMeasurement(totalSpan);
+
+document.getElementById("saddleShrink").textContent =
+  formatMeasurement(shrink);
 
   result.style.display = "block";
 }
