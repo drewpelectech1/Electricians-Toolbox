@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>Electrician's Toolbox - Conduit Calculator</title>
+
+<style>
+* {
+box-sizing: border-box;
+}
+
+body {
+margin: 0;
+padding: 20px;
+background: #101827;
+color: white;
+font-family: Arial, sans-serif;
+}
+
+.container {
+max-width: 520px;
+margin: 20px auto;
+background: #1e293b;
+padding: 25px;
+border-radius: 16px;
+}
+
+h1 {
+text-align: center;
+font-size: 26px;
+}
+
+.subtitle {
+text-align: center;
+color: #94a3b8;
+margin-bottom: 25px;
+}
+
+label {
+display: block;
+margin-top: 20px;
+margin-bottom: 8px;
+font-weight: bold;
+}
+
+input, select {
+width: 100%;
+padding: 15px;
+border: 1px solid #475569;
+border-radius: 9px;
+background: #0f172a;
+color: white;
+font-size: 18px;
+}
+
+button {
+width: 100%;
+padding: 17px;
+margin-top: 20px;
+border: none;
+border-radius: 9px;
+background: #16a34a;
+color: white;
+font-size: 18px;
+font-weight: bold;
+cursor: pointer;
+}
+
+button:active {
+background: #15803d;
+}
+
+.result {
+display: none;
+margin-top: 25px;
+padding: 20px;
+background: #0f172a;
+border: 1px solid #16a34a;
+border-radius: 10px;
+}
+
+.result h2 {
+color: #4ade80;
+text-align: center;
+}
+
+.result-number {
+font-size: 32px;
+font-weight: bold;
+text-align: center;
+color: #4ade80;
+margin: 15px 0;
+}
+
+.detail {
+padding: 10px 0;
+border-bottom: 1px solid #334155;
+}
+
+.error {
+color: #f87171;
+margin-top: 12px;
+}
+
+.footer {
+text-align: center;
+color: #64748b;
+font-size: 12px;
+margin-top: 25px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>⚡ Electrician's Toolbox</h1>
+
+<p class="subtitle">Conduit Offset Calculator</p>
+
+<label for="depth">Offset Depth (inches)</label>
+<input
+type="text"
+id="depth"
+placeholder="Example: 6 or 6 1/2"
+
+<label for="angle">Bend Angle</label>
+<select id="angle">
+<option value="5.8">10 Degrees</option>
+<option value="3.9">15 Degrees</option>
+<option value="2.6">22.5 Degrees</option>
+<option value="2.0" selected>30 Degrees</option>
+<option value="1.4">45 Degrees</option>
+<option value="1.2">60 Degrees</option>
+</select>
+
+<button onclick="calculateOffset()">
+CALCULATE OFFSET
+</button>
+
+<button onclick="resetCalculator()"
+style="background:#475569">
+RESET
+</button>
+
+<div class="result" id="result">
+
+<h2>Calculation Results</h2>
+
+<div class="detail">
+Offset Depth:
+<strong id="showDepth"></strong>
+</div>
+
+<div class="detail">
+Bend Angle:
+<strong id="showAngle"></strong>
+</div>
+
+<div class="detail">
+Multiplier:
+<strong id="showMultiplier"></strong>
+</div>
+
+<div class="result-number" id="distance">
+</div>
+
+<p style="text-align:center">
+Distance Between Bend Marks
+</p>
+
+</div>
+
+<div id="error" class="error"></div>
+
+<p class="footer">
+Electrician's Toolbox | Built for Electricians
+</p>
+
+</div>
+
+<script>
+
+const multipliers = {
+10: 5.8,
+15: 3.9,
+22.5: 2.6,
+30: 2.0,
+45: 1.4,
+60: 1.2
+};
+
+function parseMeasurement(value) {
+value = value.trim();
+
+if (!value) return NaN;
+
+const parts = value.split(/\s+/);
+
+if (parts.length === 1) {
+  return Number(parts[0]);
+}
+
+if (parts.length === 2 && parts[1].includes("/")) {
+  const fraction = parts[1].split("/");
+  const numerator = Number(fraction[0]);
+  const denominator = Number(fraction[1]);
+
+  if (!denominator) return NaN;
+
+  return Number(parts[0]) + numerator / denominator;
+}
+
+return NaN;
+}
+
+function formatMeasurement(value) {
+const whole = Math.floor(value);
+const decimal = value - whole;
+
+const fractions = [
+  [0, 1],
+  [1/16, "1/16"],
+  [1/8, "1/8"],
+  [3/16, "3/16"],
+  [1/4, "1/4"],
+  [5/16, "5/16"],
+  [3/8, "3/8"],
+  [7/16, "7/16"],
+  [1/2, "1/2"],
+  [9/16, "9/16"],
+  [5/8, "5/8"],
+  [11/16, "11/16"],
+  [3/4, "3/4"],
+  [13/16, "13/16"],
+  [7/8, "7/8"],
+  [15/16, "15/16"],
+  [1, "1"]
+];
+
+let closest = fractions[0];
+
+for (const fraction of fractions) {
+  if (Math.abs(decimal - fraction[0]) <
+      Math.abs(decimal - closest[0])) {
+    closest = fraction;
+  }
+}
+
+if (closest[0] === 1) {
+  return (whole + 1) + '"';
+}
+
+if (closest[0] === 0) {
+  return whole + '"';
+}
+
+if (whole === 0) {
+  return closest[1] + '"';
+}
+
+return whole + " " + closest[1] + '"';
+}
+
+function calculateOffset() {
+const depth = parseMeasurement(
+  document.getElementById("depth").value
+);
+
+const angle = Number(
+  document.getElementById("angle").options[
+    document.getElementById("angle").selectedIndex
+  ].text.replace(" Degrees", "")
+);
+
+const multiplier = multipliers[angle];
+
+const error = document.getElementById("error");
+const result = document.getElementById("result");
+
+error.textContent = "";
+result.style.display = "none";
+
+if (!Number.isFinite(depth) || depth <= 0) {
+  error.textContent =
+    "Please enter a valid offset depth, such as 6 or 6 1/2.";
+  return;
+}
+
+const distance = depth * multiplier;
+
+document.getElementById("showDepth").textContent =
+  formatMeasurement(depth);
+
+document.getElementById("showAngle").textContent =
+  angle + " Degrees";
+
+document.getElementById("showMultiplier").textContent =
+  multiplier;
+
+document.getElementById("distance").textContent =
+  formatMeasurement(distance);
+
+result.style.display = "block";
+}
+
+function resetCalculator() {
+document.getElementById("depth").value = "";
+document.getElementById("angle").value = "2.0";
+document.getElementById("result").style.display = "none";
+document.getElementById("error").textContent = "";
+}
+
+</script>
+
+</body>
+</html>
