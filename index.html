@@ -343,7 +343,83 @@ button:active {
 </div>
 
 
-<script>
+<!-- 3-POINT SADDLE CALCULATOR -->
+
+<div id="saddleCalculator" style="display:none;">
+
+  <div class="container">
+
+    <h1>3-POINT SADDLE CALCULATOR</h1>
+
+    <p class="subtitle">
+      Calculate conduit bends around an obstruction
+    </p>
+
+    <label for="saddleHeight">
+      OBSTRUCTION HEIGHT (INCHES)
+    </label>
+
+    <input
+      type="text"
+      id="saddleHeight"
+      placeholder="Example: 3 or 3 1/2"
+    >
+
+    <button type="button" onclick="calculateSaddle()">
+      CALCULATE SADDLE
+    </button>
+
+    <button
+      type="button"
+      onclick="resetSaddle()"
+      style="background:#475569">
+      RESET
+    </button>
+
+    <div class="result" id="saddleResult">
+
+      <h2>CALCULATION RESULTS</h2>
+
+      <div class="detail">
+        Obstruction Height:
+        <strong id="showSaddleHeight"></strong>
+      </div>
+
+      <div class="detail">
+        Center Bend:
+        <strong>45 Degrees</strong>
+      </div>
+
+      <div class="detail">
+        Outside Bends:
+        <strong>22.5 Degrees</strong>
+      </div>
+
+      <div class="detail">
+        Center to Outside Mark:
+        <strong id="showSaddleSpacing"></strong>
+      </div>
+
+      <div class="result-number" id="saddleSpan"></div>
+
+      <p style="text-align:center">
+        Total Distance Between Outside Marks
+      </p>
+
+    </div>
+
+    <div id="saddleError" class="error"></div>
+
+    <p class="footer">
+      Built by Electricians. For Electricians.
+    </p>
+
+  </div>
+
+</div>
+
+<!-- END 3-POINT SADDLE CALCULATOR -->
+  <script>
 
 // CATEGORY INFORMATION
 
@@ -361,7 +437,7 @@ const categories = {
       {
         name: "3-Point Saddle Calculator",
         description: "Calculate three-point saddle bends",
-        action: "soon"
+        action: "saddle"
       },
       {
         name: "4-Point Saddle Calculator",
@@ -433,6 +509,7 @@ function hideAllPages() {
   document.getElementById("homePage").classList.add("hidden");
   document.getElementById("categoryPage").classList.add("hidden");
   document.getElementById("calculatorPage").classList.add("hidden");
+  document.getElementById("saddleCalculator").style.display = "none";
 }
 
 function showHome() {
@@ -467,9 +544,12 @@ function openCategory(category) {
     button.onclick = function() {
 
       if (tool.action === "offset") {
-        openCalculator();
-      } else {
-        alert("This tool is coming soon!");
+  openCalculator();
+} else if (tool.action === "saddle") {
+  openSaddleCalculator();
+} else {
+  alert("This tool is coming soon!");
+}
       }
 
     };
@@ -504,6 +584,48 @@ function openCalculator() {
   hideAllPages();
   document.getElementById("calculatorPage").classList.remove("hidden");
 }
+
+   function openSaddleCalculator() {
+  hideAllPages();
+  document.getElementById("saddleCalculator").style.display = "block";
+}
+function calculateSaddle() {
+  const height = parseMeasurement(
+    document.getElementById("saddleHeight").value
+  );
+
+  const error = document.getElementById("saddleError");
+  const result = document.getElementById("saddleResult");
+
+  error.textContent = "";
+  result.style.display = "none";
+
+  if (!Number.isFinite(height) || height <= 0) {
+    error.textContent = "Enter a valid obstruction height.";
+    return;
+  }
+
+  const spacing = height * 2.6;
+  const totalSpan = spacing * 2;
+
+  document.getElementById("showSaddleHeight").textContent =
+    formatMeasurement(height);
+
+  document.getElementById("showSaddleSpacing").textContent =
+    formatMeasurement(spacing);
+
+  document.getElementById("saddleSpan").textContent =
+    formatMeasurement(totalSpan);
+
+  result.style.display = "block";
+}
+
+function resetSaddle() {
+  document.getElementById("saddleHeight").value = "";
+  document.getElementById("saddleResult").style.display = "none";
+  document.getElementById("saddleError").textContent = "";
+}
+ 
 
 
 // ORIGINAL OFFSET CALCULATOR
